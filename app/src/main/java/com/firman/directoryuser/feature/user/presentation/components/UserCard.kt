@@ -15,7 +15,10 @@ import com.firman.directoryuser.feature.user.domain.model.Gender
 import com.firman.directoryuser.feature.user.domain.model.User
 
 @Composable
-fun UserCard(user: User) {
+fun UserCard(
+    user: User,
+    onDetailClick: (User) -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -45,7 +48,9 @@ fun UserCard(user: User) {
             
             InfoRow(icon = Icons.Default.LocationOn, text = user.city)
             InfoRow(icon = Icons.Default.Email, text = user.email)
-            InfoRow(icon = Icons.Default.Phone, text = user.phoneNumber)
+            if (user.phoneNumber.isNotBlank()) {
+                InfoRow(icon = Icons.Default.Phone, text = user.phoneNumber)
+            }
             
             Box(modifier = Modifier.fillMaxWidth()) {
                 Surface(
@@ -75,7 +80,7 @@ fun UserCard(user: User) {
             }
             
             OutlinedButton(
-                onClick = { /* TODO */ },
+                onClick = { onDetailClick(user) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.outlinedButtonColors(

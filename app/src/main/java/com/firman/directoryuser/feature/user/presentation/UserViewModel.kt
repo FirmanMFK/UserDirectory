@@ -26,10 +26,7 @@ class UserViewModel(
     private val pageSize = 10
 
     init {
-        // Step 1: Immediately load from local Room database for instant UI
         loadUsers(reset = true)
-        
-        // Step 2: Sync with API in background
         fetchUsers()
         fetchCities()
     }
@@ -79,12 +76,10 @@ class UserViewModel(
         viewModelScope.launch {
             _state.update { if (isRefresh) it.copy(isRefreshing = true) else it.copy(isLoading = true) }
             val result = fetchUsersUseCase()
-            
-            // Sync with local DB
+
             loadUsers(reset = true)
 
             if (result.isFailure && !isRefresh) {
-                // Only show error state if sync failed AND we have no data AND no active search/filter
                 val currentState = _state.value
                 if (currentState.users.isEmpty() && currentState.searchQuery.isEmpty() && currentState.selectedCity == null) {
                     _state.update { it.copy(error = result.exceptionOrNull()?.message ?: "Unknown error") }

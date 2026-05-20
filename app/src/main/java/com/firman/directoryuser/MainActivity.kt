@@ -2,6 +2,7 @@ package com.firman.directoryuser
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,21 +12,31 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
+import com.firman.directoryuser.core.navigation.NavGraph
 import com.firman.directoryuser.core.theme.UserDirectoryTheme
-import com.firman.directoryuser.feature.user.presentation.UserScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        
         setContent {
             var isDarkMode by remember { mutableStateOf(false) }
+            val navController = rememberNavController()
+
+            // Dynamic System Bar configuration to ensure visibility of system icons
+            val barColor = android.graphics.Color.TRANSPARENT
+            enableEdgeToEdge(
+                statusBarStyle = SystemBarStyle.auto(barColor, barColor) { isDarkMode },
+                navigationBarStyle = SystemBarStyle.auto(barColor, barColor) { isDarkMode }
+            )
             
             UserDirectoryTheme(darkTheme = isDarkMode) {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    UserScreen(
+                    NavGraph(
+                        navController = navController,
                         isDarkMode = isDarkMode,
                         onThemeToggle = { isDarkMode = !isDarkMode }
                     )

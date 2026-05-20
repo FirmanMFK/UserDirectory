@@ -17,8 +17,7 @@ class UserRepositoryImpl(
         return try {
             val dtos = userService.getUsers()
             val entities = dtos.map { it.toEntity() }
-            userDao.clearAllUsers()
-            userDao.insertUsers(entities)
+            userDao.clearAndInsertUsers(entities)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

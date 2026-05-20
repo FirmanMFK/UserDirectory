@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.firman.directoryuser.feature.user.data.local.entity.CityEntity
 import com.firman.directoryuser.feature.user.data.local.entity.UserEntity
 
@@ -11,6 +12,15 @@ import com.firman.directoryuser.feature.user.data.local.entity.UserEntity
 interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUsers(users: List<UserEntity>)
+
+    @Query("DELETE FROM users")
+    suspend fun clearAllUsers()
+
+    @Transaction
+    suspend fun clearAndInsertUsers(users: List<UserEntity>) {
+        clearAllUsers()
+        insertUsers(users)
+    }
 
     @Query("""
         SELECT * FROM users 
@@ -29,9 +39,6 @@ interface UserDao {
         limit: Int,
         offset: Int
     ): List<UserEntity>
-
-    @Query("DELETE FROM users")
-    suspend fun clearAllUsers()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCities(cities: List<CityEntity>)

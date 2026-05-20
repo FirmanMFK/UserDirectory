@@ -1,5 +1,8 @@
 package com.firman.directoryuser.feature.user.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class User(
     val id: String,
     val name: String,
@@ -10,6 +13,7 @@ data class User(
     val gender: Gender
 )
 
+@Serializable
 enum class Gender {
     MALE, FEMALE, UNKNOWN
 }
