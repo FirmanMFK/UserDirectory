@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SortBottomSheet(
-    isAscending: Boolean,
+    isAscending: Boolean?,
     onSortSelected: (Boolean) -> Unit,
     onClearFilters: () -> Unit,
     onDismissRequest: () -> Unit
@@ -42,13 +42,15 @@ fun SortBottomSheet(
                     fontWeight = FontWeight.Bold
                 )
                 
-                TextButton(onClick = { 
-                    onClearFilters()
-                    onDismissRequest()
-                }) {
-                    Icon(Icons.Default.Clear, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Clear Filter")
+                if (isAscending != null) {
+                    TextButton(onClick = { 
+                        onClearFilters()
+                        onDismissRequest()
+                    }) {
+                        Icon(Icons.Default.Clear, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Clear Filter")
+                    }
                 }
             }
             
@@ -56,7 +58,7 @@ fun SortBottomSheet(
             
             SortItem(
                 label = "Sort A-Z",
-                isSelected = isAscending,
+                isSelected = isAscending == true,
                 onClick = {
                     onSortSelected(true)
                     onDismissRequest()
@@ -65,7 +67,7 @@ fun SortBottomSheet(
             
             SortItem(
                 label = "Sort Z-A",
-                isSelected = !isAscending,
+                isSelected = isAscending == false,
                 onClick = {
                     onSortSelected(false)
                     onDismissRequest()

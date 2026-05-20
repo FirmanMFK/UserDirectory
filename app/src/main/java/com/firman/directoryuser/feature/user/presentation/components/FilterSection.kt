@@ -74,7 +74,7 @@ fun FilterSection(
 
         if (showSortDialog) {
             SortBottomSheet(
-                isAscending = isAscending ?: true,
+                isAscending = isAscending,
                 onSortSelected = onSortToggle,
                 onClearFilters = onClearFilters,
                 onDismissRequest = { showSortDialog = false }
