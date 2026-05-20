@@ -136,7 +136,7 @@ fun UserScreen(
                     ErrorState(onRetry = viewModel::onRefresh)
                 }
                 state.users.isEmpty() && !state.isLoading && !state.isRefreshing -> {
-                    EmptyState(onClearFilters = viewModel::onClearFilters)
+                    EmptyState()
                 }
                 else -> {
                     PullToRefreshBox(

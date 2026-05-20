@@ -1,8 +1,10 @@
 package com.firman.directoryuser.feature.user.presentation.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -22,6 +24,16 @@ fun SearchBar(
         modifier = modifier,
         placeholder = { Text("Search users...") },
         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+        trailingIcon = {
+            if (query.isNotEmpty()) {
+                IconButton(onClick = { onQueryChange("") }) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = "Clear search"
+                    )
+                }
+            }
+        },
         shape = MaterialTheme.shapes.medium,
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
