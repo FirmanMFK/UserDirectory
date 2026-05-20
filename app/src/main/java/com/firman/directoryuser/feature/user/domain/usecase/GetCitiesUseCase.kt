@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 class GetCitiesUseCase(
     private val repository: UserRepository
 ) {
-    operator fun invoke(): Flow<List<String>> = repository.getCities()
+    suspend operator fun invoke(): Result<List<String>> = repository.getCities()
 }

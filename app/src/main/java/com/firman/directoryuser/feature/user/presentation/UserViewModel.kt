@@ -28,7 +28,7 @@ class UserViewModel(
 
     init {
         fetchUsers()
-        observeCities()
+        fetchCities()
     }
 
     fun onSearchQueryChange(query: String) {
@@ -92,10 +92,11 @@ class UserViewModel(
         }
     }
 
-    private fun observeCities() {
+    private fun fetchCities() {
         viewModelScope.launch {
-            getCitiesUseCase().collectLatest { cities ->
-                _state.update { it.copy(cities = cities) }
+            val result = getCitiesUseCase()
+            if (result.isSuccess) {
+                _state.update { it.copy(cities = result.getOrDefault(emptyList())) }
             }
         }
     }

@@ -42,5 +42,12 @@ class UserRepositoryImpl(
         ).map { it.toDomain() }
     }
 
-    override fun getCities(): Flow<List<String>> = userDao.getCities()
+    override suspend fun getCities(): Result<List<String>> {
+        return try {
+            val cities = userService.getCities().mapNotNull { it.name }
+            Result.success(cities)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

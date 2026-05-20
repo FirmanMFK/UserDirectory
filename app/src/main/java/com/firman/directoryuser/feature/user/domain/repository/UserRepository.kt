@@ -12,5 +12,5 @@ interface UserRepository {
         page: Int,
         pageSize: Int
     ): List<User>
-    fun getCities(): Flow<List<String>>
+    suspend fun getCities(): Result<List<String>>
 }

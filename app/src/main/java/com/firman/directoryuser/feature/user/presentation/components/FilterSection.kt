@@ -53,18 +53,9 @@ fun FilterSection(
                 modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
-            Text("Sort by Name")
+            Text(if (isAscending) "Sort A-Z" else "Sort Z-A")
         }
         
-        IconButton(
-            onClick = { /* More filters */ },
-            modifier = Modifier
-                .size(40.dp)
-                .padding(4.dp)
-        ) {
-            Icon(Icons.Default.FilterList, contentDescription = "More filters")
-        }
-
         if (showCityDialog) {
             AlertDialog(
                 onDismissRequest = { showCityDialog = false },
