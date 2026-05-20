@@ -71,8 +71,3 @@ com.firman.directoryuser/
             └── list/           # User List Screen & ViewModel
 ```
 
-## Demo Videos
-
-![User List & Navigation Demo](C:/Users/Firman/AppData/Local/Google/AndroidStudio2025.3.4/projects/userdirectory.7b7407a8/.artifacts/20260520-091945-1923f883-bc6a-48e2-8cd9-0fc22179a7d2/Screenrecorder-2026-05-20-22-39-10-98.mp4)
-
-![Add User & Validation Demo](C:/Users/Firman/AppData/Local/Google/AndroidStudio2025.3.4/projects/userdirectory.7b7407a8/.artifacts/20260520-091945-1923f883-bc6a-48e2-8cd9-0fc22179a7d2/Screenrecorder-2026-05-20-22-45-54-84.mp4)
