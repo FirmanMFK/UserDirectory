@@ -9,10 +9,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.firman.directoryuser.feature.user.domain.model.User
-import com.firman.directoryuser.feature.user.presentation.AddUserScreen
-import com.firman.directoryuser.feature.user.presentation.UserDetailScreen
-import com.firman.directoryuser.feature.user.presentation.UserScreen
-import com.firman.directoryuser.feature.user.presentation.UserViewModel
+import com.firman.directoryuser.feature.user.presentation.add.AddUserScreen
+import com.firman.directoryuser.feature.user.presentation.detail.UserDetailScreen
+import com.firman.directoryuser.feature.user.presentation.list.UserScreen
+import com.firman.directoryuser.feature.user.presentation.list.UserViewModel
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import kotlin.reflect.typeOf

@@ -1,4 +1,4 @@
-package com.firman.directoryuser.feature.user.presentation
+package com.firman.directoryuser.feature.user.presentation.list
 
 import com.firman.directoryuser.feature.user.domain.model.User
 

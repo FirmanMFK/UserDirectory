@@ -1,4 +1,4 @@
-package com.firman.directoryuser.feature.user.presentation
+package com.firman.directoryuser.feature.user.presentation.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

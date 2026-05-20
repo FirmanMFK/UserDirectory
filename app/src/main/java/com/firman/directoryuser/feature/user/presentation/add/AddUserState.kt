@@ -1,4 +1,4 @@
-package com.firman.directoryuser.feature.user.presentation
+package com.firman.directoryuser.feature.user.presentation.add
 
 data class AddUserState(
     val name: String = "",
