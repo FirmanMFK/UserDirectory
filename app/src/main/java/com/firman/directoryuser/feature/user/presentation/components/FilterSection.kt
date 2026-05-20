@@ -57,22 +57,11 @@ fun FilterSection(
         }
         
         if (showCityDialog) {
-            AlertDialog(
-                onDismissRequest = { showCityDialog = false },
-                title = { Text("Select City") },
-                text = {
-                    Column {
-                        TextButton(onClick = { onCitySelected(null); showCityDialog = false }) {
-                            Text("All Cities")
-                        }
-                        cities.forEach { city ->
-                            TextButton(onClick = { onCitySelected(city); showCityDialog = false }) {
-                                Text(city)
-                            }
-                        }
-                    }
-                },
-                confirmButton = {}
+            CityFilterBottomSheet(
+                cities = cities,
+                selectedCity = selectedCity,
+                onCitySelected = onCitySelected,
+                onDismissRequest = { showCityDialog = false }
             )
         }
     }
