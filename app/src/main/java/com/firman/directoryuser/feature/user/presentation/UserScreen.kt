@@ -27,6 +27,7 @@ fun UserScreen(
     isDarkMode: Boolean,
     onThemeToggle: () -> Unit,
     onUserClick: (User) -> Unit,
+    onAddUserClick: () -> Unit,
     viewModel: UserViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -61,7 +62,7 @@ fun UserScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* TODO: Add user */ },
+                onClick = onAddUserClick,
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {

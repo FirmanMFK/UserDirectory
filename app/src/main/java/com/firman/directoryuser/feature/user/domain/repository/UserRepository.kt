@@ -13,4 +13,5 @@ interface UserRepository {
         pageSize: Int
     ): List<User>
     suspend fun getCities(): Result<List<String>>
+    suspend fun createUser(user: User): Result<User>
 }

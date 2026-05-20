@@ -3,6 +3,7 @@ package com.firman.directoryuser.feature.user.data.repository
 import com.firman.directoryuser.feature.user.data.local.dao.UserDao
 import com.firman.directoryuser.feature.user.data.local.entity.CityEntity
 import com.firman.directoryuser.feature.user.data.mapper.toDomain
+import com.firman.directoryuser.feature.user.data.mapper.toDto
 import com.firman.directoryuser.feature.user.data.mapper.toEntity
 import com.firman.directoryuser.feature.user.data.remote.UserService
 import com.firman.directoryuser.feature.user.domain.model.User
@@ -59,6 +60,15 @@ class UserRepositoryImpl(
             } else {
                 Result.failure(e)
             }
+        }
+    }
+
+    override suspend fun createUser(user: User): Result<User> {
+        return try {
+            val response = userService.createUser(user.toDto())
+            Result.success(response.toDomain())
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 }
