@@ -1,12 +1,12 @@
 package com.firman.directoryuser.feature.user.data.repository
 
 import com.firman.directoryuser.feature.user.data.local.dao.UserDao
+import com.firman.directoryuser.feature.user.data.local.entity.CityEntity
 import com.firman.directoryuser.feature.user.data.mapper.toDomain
 import com.firman.directoryuser.feature.user.data.mapper.toEntity
 import com.firman.directoryuser.feature.user.data.remote.UserService
 import com.firman.directoryuser.feature.user.domain.model.User
 import com.firman.directoryuser.feature.user.domain.repository.UserRepository
-import kotlinx.coroutines.flow.Flow
 
 class UserRepositoryImpl(
     private val userService: UserService,
@@ -17,7 +17,7 @@ class UserRepositoryImpl(
         return try {
             val dtos = userService.getUsers()
             val entities = dtos.map { it.toEntity() }
-            userDao.clearAll()
+            userDao.clearAllUsers()
             userDao.insertUsers(entities)
             Result.success(Unit)
         } catch (e: Exception) {
@@ -28,15 +28,20 @@ class UserRepositoryImpl(
     override suspend fun getUsers(
         query: String?,
         city: String?,
-        isAsc: Boolean,
+        isAsc: Boolean?,
         page: Int,
         pageSize: Int
     ): List<User> {
         val offset = (page - 1) * pageSize
+        val isAscInt = when (isAsc) {
+            true -> 1
+            false -> 0
+            null -> null
+        }
         return userDao.getUsers(
             query = if (query.isNullOrBlank()) null else query,
             city = if (city.isNullOrBlank()) null else city,
-            isAsc = if (isAsc) 1 else 0,
+            isAsc = isAscInt,
             limit = pageSize,
             offset = offset
         ).map { it.toDomain() }
@@ -44,10 +49,17 @@ class UserRepositoryImpl(
 
     override suspend fun getCities(): Result<List<String>> {
         return try {
-            val cities = userService.getCities().mapNotNull { it.name }
-            Result.success(cities)
+            val citiesFromNetwork = userService.getCities().mapNotNull { it.name }
+            userDao.clearAllCities()
+            userDao.insertCities(citiesFromNetwork.map { CityEntity(it) })
+            Result.success(citiesFromNetwork)
         } catch (e: Exception) {
-            Result.failure(e)
+            val cachedCities = userDao.getCachedCities().map { it.name }
+            if (cachedCities.isNotEmpty()) {
+                Result.success(cachedCities)
+            } else {
+                Result.failure(e)
+            }
         }
     }
 }

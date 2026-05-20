@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -83,7 +84,8 @@ fun UserScreen(
                 selectedCity = state.selectedCity,
                 onCitySelected = viewModel::onCityFilterChange,
                 isAscending = state.isAscending,
-                onSortToggle = { viewModel.onSortChange(!state.isAscending) }
+                onSortToggle = viewModel::onSortChange,
+                onClearFilters = viewModel::onClearFilters
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -95,25 +97,32 @@ fun UserScreen(
             } else if (state.error != null && state.users.isEmpty()) {
                 ErrorState(onRetry = viewModel::onRefresh)
             } else if (state.users.isEmpty()) {
-                EmptyState()
+                EmptyState(onClearFilters = viewModel::onClearFilters)
             } else {
-                LazyColumn(
-                    state = listState,
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    contentPadding = PaddingValues(bottom = 80.dp) // Avoid FAB overlap
+                PullToRefreshBox(
+                    isRefreshing = state.isRefreshing,
+                    onRefresh = viewModel::onRefresh,
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    items(state.users) { user ->
-                        UserCard(user = user)
-                    }
-                    if (state.isLoading && state.users.isNotEmpty()) {
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(bottom = 80.dp) // Avoid FAB overlap
+                    ) {
+                        items(state.users) { user ->
+                            UserCard(user = user)
+                        }
+                        if (state.isLoading && state.users.isNotEmpty()) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                                }
                             }
                         }
                     }

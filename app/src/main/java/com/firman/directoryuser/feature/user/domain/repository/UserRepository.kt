@@ -8,7 +8,7 @@ interface UserRepository {
     suspend fun getUsers(
         query: String?,
         city: String?,
-        isAsc: Boolean,
+        isAsc: Boolean?,
         page: Int,
         pageSize: Int
     ): List<User>

@@ -9,7 +9,7 @@ class GetUsersUseCase(
     suspend operator fun invoke(
         query: String?,
         city: String?,
-        isAsc: Boolean,
+        isAsc: Boolean?,
         page: Int,
         pageSize: Int
     ): List<User> {

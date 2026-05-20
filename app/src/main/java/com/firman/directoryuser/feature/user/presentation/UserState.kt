@@ -10,7 +10,7 @@ data class UserState(
     val error: String? = null,
     val searchQuery: String = "",
     val selectedCity: String? = null,
-    val isAscending: Boolean = true,
+    val isAscending: Boolean? = null,
     val currentPage: Int = 1,
     val isEndReached: Boolean = false
 )

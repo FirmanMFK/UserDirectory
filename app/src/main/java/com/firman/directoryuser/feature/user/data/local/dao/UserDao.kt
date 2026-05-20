@@ -4,8 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.firman.directoryuser.feature.user.data.local.entity.CityEntity
 import com.firman.directoryuser.feature.user.data.local.entity.UserEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
@@ -18,20 +18,27 @@ interface UserDao {
         AND (:city IS NULL OR city = :city)
         ORDER BY 
             CASE WHEN :isAsc = 1 THEN name END ASC,
-            CASE WHEN :isAsc = 0 THEN name END DESC
+            CASE WHEN :isAsc = 0 THEN name END DESC,
+            CASE WHEN :isAsc IS NULL THEN CAST(id AS INTEGER) END ASC
         LIMIT :limit OFFSET :offset
     """)
     suspend fun getUsers(
         query: String?,
         city: String?,
-        isAsc: Int,
+        isAsc: Int?,
         limit: Int,
         offset: Int
     ): List<UserEntity>
 
-    @Query("SELECT DISTINCT city FROM users")
-    fun getCities(): Flow<List<String>>
-
     @Query("DELETE FROM users")
-    suspend fun clearAll()
+    suspend fun clearAllUsers()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCities(cities: List<CityEntity>)
+
+    @Query("SELECT * FROM cities ORDER BY name ASC")
+    suspend fun getCachedCities(): List<CityEntity>
+
+    @Query("DELETE FROM cities")
+    suspend fun clearAllCities()
 }

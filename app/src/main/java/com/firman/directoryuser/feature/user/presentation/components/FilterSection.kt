@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,8 +15,9 @@ fun FilterSection(
     cities: List<String>,
     selectedCity: String?,
     onCitySelected: (String?) -> Unit,
-    isAscending: Boolean,
-    onSortToggle: () -> Unit
+    isAscending: Boolean?,
+    onSortToggle: (Boolean) -> Unit,
+    onClearFilters: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -25,6 +25,7 @@ fun FilterSection(
         verticalAlignment = Alignment.CenterVertically
     ) {
         var showCityDialog by remember { mutableStateOf(false) }
+        var showSortDialog by remember { mutableStateOf(false) }
 
         Button(
             onClick = { showCityDialog = true },
@@ -39,21 +40,27 @@ fun FilterSection(
         }
 
         Button(
-            onClick = onSortToggle,
+            onClick = { showSortDialog = true },
             modifier = Modifier.weight(1f),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                containerColor = if (isAscending != null) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = if (isAscending != null) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
             ),
             shape = MaterialTheme.shapes.medium
         ) {
             Icon(
-                if (isAscending) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward,
+                if (isAscending == false) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
                 contentDescription = null,
                 modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
-            Text(if (isAscending) "Sort A-Z" else "Sort Z-A")
+            Text(
+                when (isAscending) {
+                    true -> "Sort A-Z"
+                    false -> "Sort Z-A"
+                    else -> "Sort by Name"
+                }
+            )
         }
         
         if (showCityDialog) {
@@ -62,6 +69,15 @@ fun FilterSection(
                 selectedCity = selectedCity,
                 onCitySelected = onCitySelected,
                 onDismissRequest = { showCityDialog = false }
+            )
+        }
+
+        if (showSortDialog) {
+            SortBottomSheet(
+                isAscending = isAscending ?: true,
+                onSortSelected = onSortToggle,
+                onClearFilters = onClearFilters,
+                onDismissRequest = { showSortDialog = false }
             )
         }
     }

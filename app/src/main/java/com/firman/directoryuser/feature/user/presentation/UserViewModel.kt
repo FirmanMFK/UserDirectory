@@ -10,7 +10,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -27,6 +26,10 @@ class UserViewModel(
     private val pageSize = 10
 
     init {
+        // Step 1: Immediately load from local Room database for instant UI
+        loadUsers(reset = true)
+        
+        // Step 2: Sync with API in background
         fetchUsers()
         fetchCities()
     }
@@ -60,15 +63,36 @@ class UserViewModel(
         loadUsers()
     }
 
+    fun onClearFilters() {
+        _state.update { 
+            it.copy(
+                selectedCity = null,
+                isAscending = null,
+                currentPage = 1,
+                isEndReached = false
+            ) 
+        }
+        loadUsers(reset = true)
+    }
+
     private fun fetchUsers(isRefresh: Boolean = false) {
         viewModelScope.launch {
             _state.update { if (isRefresh) it.copy(isRefreshing = true) else it.copy(isLoading = true) }
             val result = fetchUsersUseCase()
-            if (result.isSuccess) {
-                loadUsers(reset = true)
-            } else if (!isRefresh) {
-                _state.update { it.copy(error = result.exceptionOrNull()?.message ?: "Unknown error") }
+            
+            // Sync with local DB
+            loadUsers(reset = true)
+
+            if (result.isFailure && !isRefresh) {
+                // Only show error state if sync failed AND we have no data AND no active search/filter
+                val currentState = _state.value
+                if (currentState.users.isEmpty() && currentState.searchQuery.isEmpty() && currentState.selectedCity == null) {
+                    _state.update { it.copy(error = result.exceptionOrNull()?.message ?: "Unknown error") }
+                }
+            } else {
+                _state.update { it.copy(error = null) }
             }
+            
             _state.update { it.copy(isLoading = false, isRefreshing = false) }
         }
     }
