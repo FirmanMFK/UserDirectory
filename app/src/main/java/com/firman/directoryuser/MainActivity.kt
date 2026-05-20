@@ -24,7 +24,6 @@ class MainActivity : ComponentActivity() {
             var isDarkMode by remember { mutableStateOf(false) }
             val navController = rememberNavController()
 
-            // Dynamic System Bar configuration to ensure visibility of system icons
             val barColor = android.graphics.Color.TRANSPARENT
             enableEdgeToEdge(
                 statusBarStyle = SystemBarStyle.auto(barColor, barColor) { isDarkMode },

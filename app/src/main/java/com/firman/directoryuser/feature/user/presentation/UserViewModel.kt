@@ -23,6 +23,7 @@ class UserViewModel(
     val state: StateFlow<UserState> = _state.asStateFlow()
 
     private var searchJob: Job? = null
+    private var loadJob: Job? = null
     private val pageSize = 10
 
     init {
@@ -55,7 +56,7 @@ class UserViewModel(
     }
 
     fun loadNextPage() {
-        if (_state.value.isLoading || _state.value.isEndReached) return
+        if (_state.value.isLoading || _state.value.isRefreshing || _state.value.isEndReached) return
 
         _state.update { it.copy(currentPage = it.currentPage + 1, isLoading = true) }
 
@@ -100,7 +101,8 @@ class UserViewModel(
     }
 
     private fun loadUsers(reset: Boolean = false) {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             val currentState = _state.value
             val users = getUsersUseCase(
                 query = currentState.searchQuery,
