@@ -53,6 +53,7 @@ class UserViewModel(
 
     fun onRefresh() {
         fetchUsers(isRefresh = true)
+        fetchCities()
     }
 
     fun loadNextPage() {
@@ -87,9 +88,10 @@ class UserViewModel(
 
             loadUsers(reset = true)
 
-            if (result.isFailure && !isRefresh) {
+            if (result.isFailure) {
                 val currentState = _state.value
-                if (currentState.users.isEmpty() && currentState.searchQuery.isEmpty() && currentState.selectedCity == null) {
+                // Show error if we have no users to show (first load or failed refresh with empty DB)
+                if (currentState.users.isEmpty()) {
                     _state.update { it.copy(error = result.exceptionOrNull()?.message ?: "Unknown error") }
                 }
             } else {
