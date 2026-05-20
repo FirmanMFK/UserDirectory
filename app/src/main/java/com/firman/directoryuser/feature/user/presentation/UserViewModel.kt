@@ -56,8 +56,13 @@ class UserViewModel(
 
     fun loadNextPage() {
         if (_state.value.isLoading || _state.value.isEndReached) return
-        _state.update { it.copy(currentPage = it.currentPage + 1) }
-        loadUsers()
+
+        _state.update { it.copy(currentPage = it.currentPage + 1, isLoading = true) }
+
+        viewModelScope.launch {
+            delay(1000)
+            loadUsers()
+        }
     }
 
     fun onClearFilters() {
@@ -77,6 +82,8 @@ class UserViewModel(
             _state.update { if (isRefresh) it.copy(isRefreshing = true) else it.copy(isLoading = true) }
             val result = fetchUsersUseCase()
 
+            _state.update { it.copy(currentPage = 1, isEndReached = false) }
+
             loadUsers(reset = true)
 
             if (result.isFailure && !isRefresh) {
@@ -87,7 +94,7 @@ class UserViewModel(
             } else {
                 _state.update { it.copy(error = null) }
             }
-            
+
             _state.update { it.copy(isLoading = false, isRefreshing = false) }
         }
     }
@@ -100,12 +107,13 @@ class UserViewModel(
                 city = currentState.selectedCity,
                 isAsc = currentState.isAscending,
                 page = currentState.currentPage,
-                pageSize = pageSize
+                pageSize = pageSize,
             )
             _state.update { 
                 it.copy(
                     users = if (reset) users else it.users + users,
-                    isEndReached = users.size < pageSize
+                    isEndReached = users.size < pageSize,
+                    isLoading = false
                 )
             }
         }
