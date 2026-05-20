@@ -1,5 +1,7 @@
 package com.firman.directoryuser.feature.user.presentation
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -90,38 +92,71 @@ fun UserScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (state.isLoading && state.users.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            } else if (state.error != null && state.users.isEmpty()) {
-                ErrorState(onRetry = viewModel::onRefresh)
-            } else if (state.users.isEmpty()) {
-                EmptyState(onClearFilters = viewModel::onClearFilters)
-            } else {
-                PullToRefreshBox(
-                    isRefreshing = state.isRefreshing,
-                    onRefresh = viewModel::onRefresh,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    LazyColumn(
-                        state = listState,
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        contentPadding = PaddingValues(bottom = 80.dp) // Avoid FAB overlap
-                    ) {
-                        items(state.users) { user ->
-                            UserCard(user = user)
+            Crossfade(
+                targetState = state,
+                animationSpec = tween(durationMillis = 500),
+                label = "ScreenState"
+            ) { targetState ->
+                when {
+                    (targetState.isLoading || targetState.isRefreshing) && targetState.users.isEmpty() -> {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            contentPadding = PaddingValues(bottom = 80.dp)
+                        ) {
+                            items(5) {
+                                UserCardSkeleton()
+                            }
                         }
-                        if (state.isLoading && state.users.isNotEmpty()) {
-                            item {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                    }
+                    targetState.error != null && targetState.users.isEmpty() -> {
+                        ErrorState(onRetry = viewModel::onRefresh)
+                    }
+                    targetState.users.isEmpty() && !targetState.isLoading && !targetState.isRefreshing -> {
+                        EmptyState(onClearFilters = viewModel::onClearFilters)
+                    }
+                    else -> {
+                        PullToRefreshBox(
+                            isRefreshing = targetState.isRefreshing,
+                            onRefresh = viewModel::onRefresh,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Crossfade(
+                                targetState = targetState.isRefreshing,
+                                animationSpec = tween(durationMillis = 400),
+                                label = "RefreshTransition"
+                            ) { isRefreshing ->
+                                if (isRefreshing) {
+                                    LazyColumn(
+                                        modifier = Modifier.fillMaxSize(),
+                                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                                        contentPadding = PaddingValues(bottom = 80.dp)
+                                    ) {
+                                        items(5) {
+                                            UserCardSkeleton()
+                                        }
+                                    }
+                                } else {
+                                    LazyColumn(
+                                        state = listState,
+                                        modifier = Modifier.fillMaxSize(),
+                                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                                        contentPadding = PaddingValues(bottom = 80.dp)
+                                    ) {
+                                        items(targetState.users) { user ->
+                                            UserCard(user = user)
+                                        }
+                                        if (targetState.isLoading && targetState.users.isNotEmpty()) {
+                                            item {
+                                                Box(
+                                                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

@@ -82,7 +82,7 @@ fun UserCard(user: User) {
                     contentColor = MaterialTheme.colorScheme.primary
                 )
             ) {
-                Text("Lihat Detail", fontWeight = FontWeight.Bold)
+                Text("See Detail", fontWeight = FontWeight.Bold)
             }
         }
     }
